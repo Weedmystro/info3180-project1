@@ -8,6 +8,13 @@ This file creates your application.
 from app import app
 from flask import render_template, request, redirect, url_for
 
+from app import db
+from app.forms import PropertyForm
+from app.models import Property
+
+import os
+import psycopg2
+from werkzeug.utils import secure_filename
 
 ###
 # Routing for your application.
