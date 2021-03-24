@@ -6,16 +6,22 @@ This file creates your application.
 """
 
 from app import app
-from flask import render_template, request, redirect, url_for
-
 from app import db
+from flask import render_template, request, redirect, url_for, flash 
+
+
 from app.forms import PropertyForm
 from app.models import Property
 
+from werkzeug.utils import secure_filename
 import os
 import psycopg2
-from werkzeug.utils import secure_filename
 
+#Database Connection
+import psycopg2
+def connect_db():
+    return psycopg2.connect(host="localhost", database="mydb", user="someuser", password="somepass")
+ 
 ###
 # Routing for your application.
 ###
@@ -35,6 +41,69 @@ def about():
 ###
 # The functions below should be applicable to all Flask apps.
 ###
+
+@app.route('/property/', methods=['GET', 'POST'])
+def new_property():
+    # Loads up the form
+    property_form = PropertyForm()
+
+    # Checks for method type and validatation
+    if request.method == 'POST':
+        if property_form.validate_on_submit():
+
+            # Collect the data from the form
+            p_title = property_form.p_title.data
+            description = property_form.p_description.data
+            rooms = property_form.rooms.data
+            bathrooms = property_form.bathrooms.data
+            price = property_form.price.data
+            p_type = property_form.p_type.data
+            location = property_form.location.data
+
+            photo = property_form.photo.data
+            filename = secure_filename(photo.filename)
+            photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            # Create a Property object
+            property = Property(p_title, description, rooms,
+                                bathrooms, price, p_type, location, photo)
+            db.session.add(property)
+            db.session.commit()
+
+            # Redirects user to the Properties page
+            flash('New Property Added Successfully!', 'success')
+            return redirect(url_for('all_properties'))
+    else:
+        flash_errors(property_form)
+
+    return render_template('property.html', form=property_form)
+
+
+@app.route('/properties/')
+def all_properties():
+
+    # Connect to the database
+    db = connect_db()
+    cur = db.cursor()
+
+    cur.executes('SELECT * FROM Properties')
+    properties = cur.fetchall()
+
+    return render_template('properties.html', properties=properties)
+
+
+@app.route('/property/<propertyid>')
+def specific_property(property_id):
+    property_id = int(property_id)
+
+    # Locates the Property with the matching ID
+    property = Property.query.filter_by(id=property_id).first()
+
+    return render_template('property.html', property=property)
+
+
+
+
 
 # Display Flask WTF errors as Flash messages
 def flash_errors(form):
