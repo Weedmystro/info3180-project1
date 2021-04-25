@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+{% include 'flashmessages.html' %}
+
+{% if properties |length > 0 %}
+
+    <h1 class="page-header"> Properties </h1>
+    <div class="property-list">
+        {% for property in properties %}
+        <div class="overview-card">
+            <div>
+                <img class='main' src="{{ url_for('get_image', filename = property.image) }}"/>
+            </div>
+            <div class="card-body">
+                <h5 class="title"> {{ property.title }}</h5>
+                <p class="location"><span class="glyphicon glyphicon-map-marker"></span> {{ property.location }}</p>
+                <span class="attribute price"> $ {{ property.price}} </span>
+            </div>
+            <form method="GET" action="{{ url_for('pid', propertyid=property.id)}}">
+                <button type="submit" class="btn view-btn"> View Property </button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <h3> Sorryh there are no properties available. Please try again later</h3>
+
+{% endif %}
+
+{% endblock %}

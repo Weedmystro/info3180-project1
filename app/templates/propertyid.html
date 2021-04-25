@@ -1,34 +1,28 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block main %}
 
-{% include 'flash_messages.html' %}
+    <div class="property-card">
 
-{% if properties |length > 0 %}
-
-<h1 class="page-header">Properties</h1>
-<div class="property-list">
-    {% for property in properties %}
-    <div class="overview-card">
         <div>
-            <img class='main' src="{{ url_for('get_image', filename = property.photo) }}"/>
+            <img class="single" src="{{ url_for('get_image', filename= properties.image )}} "/>
         </div>
-        <div class="card-body">
-            <h5 class="title"> {{ property.title }}</h5>
-            <p class="location"><span class="glyphicon glyphicon-map-marker"></span> {{ property.location }}</p>
-            <span class="attribute price"> $ {{ property.price}} </span>
+        <div class="single-card-body">  
+            <h2>{{ properties.title }}</h2>
+            <div class="attributes">
+                <span class="attribute price">${{ properties.price }}</span> <span class="attribute type">{{ properties.pType}}</span>
+            </div>
+            <p>{{ properties.description }}</p>
+            <div class="add-tab">
+                <p><span class="glyphicon glyphicon-bed"></span> {{ properties.bedrooms }} Bedrooms</p>  
+                <p><i class="fa fa-bath"></i> {{ properties.bathrooms}} Bathrooms</p>
+            </div>
+            <p><span class="glyphicon glyphicon-map-marker"></span> {{ properties.location }}</p>
+        
+
+            <button type="submit" class="btn email-btn">Email Realtor</button>
         </div>
-        <form method="GET" action="{{ url_for('pid', propertyid=property.id)}}">
-            <button type="submit" class="btn view-btn"> View Property </button>
-        </form>
+
     </div>
-    {% endfor %}
-</div>
-{% else %}
-<h3> Sorry there are no available properties, please try again soon :) </h3>
 
-{% endif %}
-
-{% endblock %}
-
-  
+{% endblock %} 
