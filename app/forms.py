@@ -6,12 +6,12 @@ from flask_wtf.file import FileField, FileRequired, FileAllowed
 
 
 
-class Formproperty(FlaskForm):
-    title=StringField('Property Title',validators=[DataRequired()])
-    bedrooms = IntegerField('No.of Rooms', validators=[DataRequired()])
-    baths=IntegerField('No.of Bathrooms',validators=[DataRequired()])
-    ptype = SelectField('Property Type', choices=[('House', 'House'), ('Apartment', 'Apartment')],validators=[DataRequired()])
+class PropertyForm(FlaskForm):
+    title = StringField('Property Title', validators = [DataRequired()])
+    bedrooms = IntegerField('No.of Rooms', validators = [DataRequired()])
+    baths = IntegerField('No.of Bathrooms', validator = [DataRequired()])
+    pType = SelectField('Property Type', choices = [("None", "Select Type"), [('House', 'House'), ('Apartment', 'Apartment')], validators = [DataRequired()])
     location=StringField('Location',validators=[DataRequired()])
-    price=FloatField('Price',validators=[DataRequired()])
-    description=TextAreaField('Description',validators=[DataRequired()])
+    price = FloatField('Price',validators=[DataRequired()])
+    description = TextAreaField('Description',validators=[DataRequired()])
     image = FileField('Photo', validators=[FileRequired(), FileAllowed(['jpg', 'png', 'Images only!'])])

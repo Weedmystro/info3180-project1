@@ -36,6 +36,59 @@ def about():
 # The functions below should be applicable to all Flask apps.
 ###
 
+
+
+@app.route('/property/', methods = ['GET','POST'])
+def property():
+    """Render the website's form to add a new property. """
+    form = PropertyForm()
+
+    if request.method == 'POST' and form.validate_on_submit():
+        title = form.title.data
+        bedrooms = form.bedrooms.data
+        bathrooms = form.bathrooms.data
+        pType = form.pType.data
+        location = form.location.data
+        price = form.price.data
+        description = form.description.data
+        image = form.image.data
+        filename = secure_filename(photo.filename)
+        image.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+
+        prop = PropertyInfo (title, description,bedrooms,bathrooms,price,location,pType,filename)
+
+        db.session.add(prop)
+        db.session.commit()
+        
+        flash("Property Successfully Added", "success")
+        return redirect(url_for('properties'))
+
+    return render_template('propertyform.html', form=form)
+
+@app.route('/properties', methods= ['GET'])
+def properties():
+    """Renders a list of all properties in the database"""
+    Aps = PropertyInfo.query.all()
+    if request.method == 'GET':    
+        return render_template('properties.html', properties = Aps)
+
+@app.route('/property/<propertyid>', methods = ['GET'])
+def pid(propertyid):
+    """Renders the template for viewing an individual property by a specific  property id"""
+    propspec = PropertyInfo.query.filter_by(id = propertyid).first()
+    if request.method == 'GET':
+        return render_template('propertyid.html', properties = propspec)
+
+
+@app.route('/upload/<filename>')
+def get_image(filename):
+    root_dir = os.getcwd()
+    return send_from_directory(os.path.join(root_dir, app.config['UPLOAD_FOLDER']),filename)
+
+
+
+
+
 # Display Flask WTF errors as Flash messages
 def flash_errors(form):
     for field, errors in form.errors.items():
